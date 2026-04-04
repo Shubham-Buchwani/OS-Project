@@ -1,0 +1,16 @@
+{
+  "name": "@os-sim/engine",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@os-sim/shared": "*"
+  },
+  "devDependencies": {
+    "vitest": "^1.4.0"
+  }
+}
