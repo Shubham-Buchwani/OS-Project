@@ -1,0 +1,21 @@
+{
+  "name": "os-simulator",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w packages/server\" \"npm run dev -w packages/client\"",
+    "dev:server": "npm run dev -w packages/server",
+    "dev:client": "npm run dev -w packages/client",
+    "test": "npm run test -w packages/engine && npm run test -w packages/server",
+    "lint": "eslint packages/*/src --ext .js,.jsx,.ts,.tsx",
+    "format": "prettier --write \"packages/*/src/**/*.{js,jsx,ts,tsx,json}\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5"
+  }
+}
