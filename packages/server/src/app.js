@@ -18,6 +18,9 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Trust the first proxy (essential for Render/Heroku/Cloudflare SSL)
+app.set('trust proxy', 1);
+
 // ── Security Headers ─────────────────────────────────────────────────────────
 app.use(helmet({
   crossOriginEmbedderPolicy: false,
