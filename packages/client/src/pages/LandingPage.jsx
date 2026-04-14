@@ -1,128 +1,184 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Cpu, Zap, Shield, TrendingUp, ArrowRight, Play, ChevronRight } from 'lucide-react';
+import { Cpu, Layers, CheckCircle2, ChevronRight } from 'lucide-react';
 
-const FEATURES = [
-  { icon: Cpu,       color: '#8b5cf6', title: 'Process Scheduling',    desc: 'Step through FCFS, SJF, Round Robin, Priority & MLFQ with animated Gantt charts.' },
-  { icon: Shield,    color: '#06b6d4', title: 'Memory Management',     desc: 'Visualize FIFO, LRU, Optimal & Clock page replacement frame-by-frame.' },
-  { icon: Zap,       color: '#ef4444', title: 'Deadlock Detection',    desc: "Run Banker's Algorithm and Wait-For Graph cycle detection interactively." },
-  { icon: TrendingUp,color: '#10b981', title: 'File System Simulation',desc: 'Explore disk block allocation and SCAN/SSTF/LOOK disk arm scheduling.' },
+const SPECIFICATIONS = [
+  { module: 'Process Scheduling', algorithms: ['FCFS', 'SJF (Preemptive)', 'Round Robin', 'Priority'], complexity: 'O(N log N)', status: 'Live' },
+  { module: 'Memory Management',  algorithms: ['FIFO', 'LRU', 'Optimal', 'Clock'], complexity: 'O(1) - O(N)', status: 'Live' },
+  { module: 'Deadlock Control',    algorithms: ['Bankers', 'Wait-for Graph'], complexity: 'O(P * R^2)', status: 'Live' },
+  { module: 'Disk Scheduling',    algorithms: ['FCFS', 'SSTF', 'SCAN', 'LOOK'], complexity: 'O(N log N)', status: 'Live' },
 ];
 
-const STATS = [
-  { value: '10+', label: 'Algorithms' },
-  { value: '4',   label: 'OS Modules' },
-  { value: '∞',   label: 'Simulations' },
-];
+function SimulationPreview() {
+  return (
+    <div className="glass-card" style={{ padding: 0, overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.5)', width: '100%', maxWidth: 540 }}>
+      {/* Window Header */}
+      <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--clr-border)', background: 'var(--clr-bg-elevated)', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ display: 'flex', gap: 6 }}>
+          <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f56' }} />
+          <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ffbd2e' }} />
+          <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#27c93f' }} />
+        </div>
+        <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--clr-text-muted)', fontFamily: 'var(--font-mono)' }}>simulation_run_01.exec</span>
+      </div>
+      
+      {/* Simulation Content */}
+      <div style={{ padding: 'clamp(16px, 4vw, 24px)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 24 }}>
+          <div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--clr-primary)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 4 }}>Live Schedule</div>
+            <div style={{ fontSize: '1rem', fontWeight: 600 }}>CPU Activity Trace</div>
+          </div>
+          <div className="tag-tech" style={{ display: 'none', '@media (min-width: 480px)': { display: 'block' } }}>Algo: Round Robin</div>
+        </div>
 
-const fadeUp = { hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } };
+        {/* Mock Gantt Chart */}
+        <div style={{ display: 'flex', gap: 4, height: 40, marginBottom: 32 }}>
+          <div style={{ flex: 2, background: 'var(--clr-primary)', borderRadius: 4, opacity: 0.9 }} />
+          <div style={{ flex: 1, background: 'var(--clr-accent)',  borderRadius: 4, opacity: 0.8 }} />
+          <div style={{ flex: 3, background: 'var(--clr-primary)', borderRadius: 4, opacity: 0.7 }} />
+          <div style={{ flex: 1.5, background: 'var(--clr-success)', borderRadius: 4, opacity: 0.6 }} />
+          <div style={{ flex: 2, background: 'var(--clr-primary)', borderRadius: 4, opacity: 0.9 }} />
+        </div>
+
+        {/* Mock Job Queue */}
+        <div style={{ display: 'grid', gap: 8 }}>
+          {[
+            { id: 'P1', status: 'Running', time: '12ms' },
+            { id: 'P2', status: 'Ready',   time: '4ms' },
+            { id: 'P3', status: 'Waiting', time: '8ms' },
+          ].map((job) => (
+            <div key={job.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'var(--clr-bg-elevated)', border: '1px solid var(--clr-border)', borderRadius: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '0.85rem' }}>{job.id}</span>
+                <span style={{ fontSize: '0.8rem', color: 'var(--clr-text-secondary)' }}>{job.status}</span>
+              </div>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--clr-text-muted)' }}>{job.time}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function LandingPage() {
   const navigate = useNavigate();
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--clr-bg)' }}>
 
       {/* ── Header ──────────────────────────────────────────── */}
-      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 48px', borderBottom: '1px solid var(--clr-border)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 36, height: 36, background: 'var(--clr-primary-dim)', border: '1px solid var(--clr-border-hover)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--clr-primary)' }}>
-            <Cpu size={20} />
-          </div>
-          <span style={{ fontWeight: 700, fontSize: '1.1rem', background: 'linear-gradient(135deg, var(--clr-primary), var(--clr-accent))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>OS Simulator</span>
+      <header style={{ padding: '0 clamp(16px, 5vw, 48px)', height: 72, borderBottom: '1px solid var(--clr-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Cpu size={24} color="var(--clr-primary)" />
+          <span style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: '-0.02em', display: 'none', '@media (min-width: 480px)': { display: 'block' } }}>OS Simulator</span>
+          <span className="tag-tech" style={{ display: 'none', '@media (min-width: 640px)': { display: 'block' } }}>v1.0.4</span>
         </div>
-        <div style={{ display: 'flex', gap: 12 }}>
-          <Link to="/login"    className="btn btn-ghost btn-sm">Log In</Link>
+        <div style={{ display: 'flex', gap: 'clamp(12px, 3vw, 24px)', alignItems: 'center' }}>
+          <Link to="/login" className="btn btn-ghost btn-sm">Sign in</Link>
           <Link to="/register" className="btn btn-primary btn-sm">Get Started</Link>
         </div>
       </header>
 
-      {/* ── Hero ────────────────────────────────────────────── */}
-      <section style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '96px 24px 64px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-        {/* Glow orbs */}
-        <div style={{ position: 'absolute', width: 600, height: 600, background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%)', top: '50%', left: '50%', transform: 'translate(-60%, -50%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', width: 400, height: 400, background: 'radial-gradient(circle, rgba(6,182,212,0.1) 0%, transparent 70%)', top: '30%', right: '10%', pointerEvents: 'none' }} />
-
-        <motion.div initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }} style={{ position: 'relative', zIndex: 1 }}>
-          <motion.div variants={fadeUp}>
-            <span className="badge badge-primary" style={{ marginBottom: 24, display: 'inline-flex' }}>
-              <Zap size={12} /> Interactive OS Learning
-            </span>
-          </motion.div>
-
-          <motion.h1 variants={fadeUp} style={{ maxWidth: 760, marginBottom: 24 }}>
-            Master Operating System Concepts Through{' '}
-            <span style={{ background: 'linear-gradient(135deg, var(--clr-primary), var(--clr-accent))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Real-Time Simulations
-            </span>
-          </motion.h1>
-
-          <motion.p variants={fadeUp} style={{ fontSize: '1.2rem', color: 'var(--clr-text-secondary)', maxWidth: 600, margin: '0 auto 40px', lineHeight: 1.7 }}>
-            Step through process scheduling, memory management, deadlocks, and file systems — algorithm by algorithm, tick by tick.
-          </motion.p>
-
-          <motion.div variants={fadeUp} style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button className="btn btn-primary btn-lg" onClick={() => navigate('/register')}>
-              <Play size={18} /> Start Learning Free
-            </button>
-            <Link to="/login" className="btn btn-ghost btn-lg">
-              Sign In <ArrowRight size={18} />
-            </Link>
-          </motion.div>
-
-          {/* Stats */}
-          <motion.div variants={fadeUp} style={{ display: 'flex', gap: 48, justifyContent: 'center', marginTop: 64, paddingTop: 48, borderTop: '1px solid var(--clr-border)' }}>
-            {STATS.map((s) => (
-              <div key={s.label} style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '2rem', fontWeight: 700, background: 'linear-gradient(135deg, var(--clr-primary), var(--clr-accent))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{s.value}</div>
-                <div style={{ fontSize: '0.875rem', color: 'var(--clr-text-muted)' }}>{s.label}</div>
-              </div>
-            ))}
-          </motion.div>
-        </motion.div>
+      {/* ── Hero section ────────────────────────────────────── */}
+      <section style={{ padding: 'clamp(64px, 12vw, 120px) clamp(16px, 5vw, 48px)', borderBottom: '1px solid var(--clr-border)' }}>
+        <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'clamp(40px, 8vw, 80px)', alignItems: 'center' }}>
+          <div>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 12px', background: 'var(--clr-bg-elevated)', border: '1px solid var(--clr-border)', borderRadius: 20, marginBottom: 24, fontSize: '0.8rem', color: 'var(--clr-primary)', fontWeight: 600 }}>
+              <Layers size={14} /> System Core v2.0
+            </div>
+            <h1 style={{ marginBottom: 24, fontWeight: 700, lineHeight: 1.1 }}>
+              Visual Simulation for Modern OS.
+            </h1>
+            <p style={{ fontSize: 'clamp(1rem, 3vw, 1.25rem)', color: 'var(--clr-text-secondary)', marginBottom: 40, maxWidth: 560, lineHeight: 1.6 }}>
+              A high-precision environment for testing and visualizing OS kernel algorithms. Built for computer science students and engineers.
+            </p>
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+              <button className="btn btn-primary btn-lg" onClick={() => navigate('/register')}>Start Simulating</button>
+              <button className="btn btn-ghost btn-lg">Documentation</button>
+            </div>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <SimulationPreview />
+          </div>
+        </div>
       </section>
 
-      {/* ── Features ────────────────────────────────────────── */}
-      <section style={{ padding: '64px 48px', borderTop: '1px solid var(--clr-border)' }}>
+      {/* ── Engineering Stack Strip ────────────────────────── */}
+      <div style={{ padding: '24px 16px', borderBottom: '1px solid var(--clr-border)', background: 'var(--clr-bg-elevated)', display: 'flex', justifyContent: 'center', gap: 'clamp(20px, 5vw, 48px)', flexWrap: 'wrap' }}>
+        {['React', 'Node.js', 'Redis', 'D3.js', 'Framer'].map(tech => (
+          <span key={tech} style={{ fontSize: '0.7rem', color: 'var(--clr-text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tech}</span>
+        ))}
+      </div>
+
+      {/* ── Technical Overview ─────────────────────────────── */}
+      <section style={{ padding: 'var(--section-spacing) clamp(16px, 5vw, 48px)' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <h2 style={{ marginBottom: 12 }}>Everything you need to master OS</h2>
-            <p>Four core modules, ten algorithms, unlimited simulations.</p>
+          <div style={{ marginBottom: 48 }}>
+            <h2 style={{ marginBottom: 12 }}>Technical Overview</h2>
+            <p style={{ color: 'var(--clr-text-muted)' }}>Core simulation modules supported by the engine.</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24 }}>
-            {FEATURES.map((f, i) => (
-              <motion.div
-                key={f.title}
-                className="glass-card"
-                style={{ padding: 28 }}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.4 }}
-                whileHover={{ y: -4 }}
-              >
-                <div style={{ width: 44, height: 44, background: `${f.color}22`, border: `1px solid ${f.color}44`, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', color: f.color, marginBottom: 16 }}>
-                  <f.icon size={22} />
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
+            {SPECIFICATIONS.map(spec => (
+              <div key={spec.module} className="glass-card" style={{ padding: 'clamp(24px, 4vw, 32px)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+                  <h3 style={{ fontSize: '1.25rem' }}>{spec.module}</h3>
+                  <div style={{ display: 'flex', gap: 4, alignItems: 'center', fontSize: '0.7rem', color: 'var(--clr-success)', fontWeight: 700 }}>
+                    <CheckCircle2 size={12} /> Live
+                  </div>
                 </div>
-                <h4 style={{ marginBottom: 8, color: 'var(--clr-text-primary)' }}>{f.title}</h4>
-                <p style={{ fontSize: '0.875rem', lineHeight: 1.6 }}>{f.desc}</p>
-              </motion.div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--clr-text-muted)', textTransform: 'uppercase', fontWeight: 600, marginBottom: 8 }}>Included Algos</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                      {spec.algorithms.slice(0, 3).map(algo => <span key={algo} className="tag-tech">{algo}</span>)}
+                      {spec.algorithms.length > 3 && <span className="tag-tech">+{spec.algorithms.length - 3} more</span>}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 16, borderTop: '1px solid var(--clr-border)' }}>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--clr-text-secondary)' }}>Complexity</span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>{spec.complexity}</span>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* ── CTA ─────────────────────────────────────────────── */}
-      <section style={{ padding: '64px 48px', textAlign: 'center', borderTop: '1px solid var(--clr-border)' }}>
-        <h2 style={{ marginBottom: 16 }}>Ready to simulate?</h2>
-        <p style={{ marginBottom: 32 }}>Join now and start exploring OS algorithms interactively.</p>
-        <button className="btn btn-primary btn-lg" onClick={() => navigate('/register')}>
-          Create Free Account <ChevronRight size={18} />
-        </button>
+      <section style={{ padding: 'var(--section-spacing) clamp(16px, 5vw, 48px)', borderTop: '1px solid var(--clr-border)' }}>
+        <div className="container" style={{ textAlign: 'center' }}>
+          <h2 style={{ marginBottom: 20 }}>Deploy Your Simulation.</h2>
+          <p style={{ marginBottom: 40, color: 'var(--clr-text-secondary)', maxWidth: 600, margin: '0 auto 40px' }}>Join students already mastering operating system internals with our visual workbench.</p>
+          <button className="btn btn-primary btn-lg" onClick={() => navigate('/register')} style={{ minWidth: 'clamp(200px, 40vw, 240px)' }}>
+            Start Simulation <ChevronRight size={18} />
+          </button>
+        </div>
       </section>
 
-      <footer style={{ padding: '24px 48px', borderTop: '1px solid var(--clr-border)', textAlign: 'center', color: 'var(--clr-text-muted)', fontSize: '0.8rem' }}>
-        © {new Date().getFullYear()} OS Simulator · Built for learners
+      {/* ── Footer ──────────────────────────────────────────── */}
+      <footer style={{ padding: '48px clamp(16px, 5vw, 48px)', borderTop: '1px solid var(--clr-border)', background: 'var(--clr-bg-elevated)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 40 }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+            <Cpu size={20} color="var(--clr-primary)" />
+            <span style={{ fontWeight: 700 }}>OS Simulator</span>
+          </div>
+          <p style={{ fontSize: '0.8rem', lineHeight: 1.6, color: 'var(--clr-text-secondary)' }}>An open-source workbench for kernel algorithm visualization.</p>
+        </div>
+        <div>
+          <h4 style={{ fontSize: '0.8rem', marginBottom: 16, textTransform: 'uppercase' }}>Modules</h4>
+          <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 8, fontSize: '0.8rem', color: 'var(--clr-text-muted)' }}>
+            <li>Scheduling</li>
+            <li>Memory</li>
+            <li>Deadlock</li>
+          </ul>
+        </div>
+        <div style={{ textAlign: 'right', fontSize: '0.75rem', color: 'var(--clr-text-muted)', gridColumn: '1 / -1', borderTop: '1px solid var(--clr-border)', paddingTop: 24, marginTop: 12 }}>
+          © {new Date().getFullYear()} OS Simulator Project.
+        </div>
       </footer>
     </div>
   );
