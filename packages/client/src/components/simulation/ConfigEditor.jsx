@@ -94,6 +94,8 @@ function SchedulingConfig({ config, update, updateProcess, addProcess, removePro
 
 // ── Memory ────────────────────────────────────────────────────────────────────
 function MemoryConfig({ config, update, disabled }) {
+  const [inputValue, setInputValue] = useState((config.pageReferenceString ?? []).join(', '));
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div className="form-group">
@@ -115,8 +117,9 @@ function MemoryConfig({ config, update, disabled }) {
           type="text"
           className="form-input"
           style={{ fontFamily: 'var(--font-mono)' }}
-          value={(config.pageReferenceString ?? []).join(', ')}
+          value={inputValue}
           onChange={e => {
+            setInputValue(e.target.value);
             const arr = e.target.value.split(',').map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n));
             update('pageReferenceString', arr);
           }}
@@ -131,6 +134,8 @@ function MemoryConfig({ config, update, disabled }) {
 
 // ── Deadlock ──────────────────────────────────────────────────────────────────
 function DeadlockConfig({ config, update, disabled }) {
+  const [inputValue, setInputValue] = useState((config.available ?? []).join(', '));
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div className="form-group">
@@ -152,7 +157,18 @@ function DeadlockConfig({ config, update, disabled }) {
       </div>
       <div className="form-group">
         <label className="form-label">Available <span style={{ color: 'var(--clr-text-muted)', fontSize: '0.75rem' }}>(comma separated)</span></label>
-        <input type="text" className="form-input" style={{ fontFamily: 'var(--font-mono)' }} value={(config.available ?? []).join(', ')} onChange={e => { const arr = e.target.value.split(',').map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n)); update('available', arr); }} disabled={disabled} />
+        <input
+          type="text"
+          className="form-input"
+          style={{ fontFamily: 'var(--font-mono)' }}
+          value={inputValue}
+          onChange={e => {
+            setInputValue(e.target.value);
+            const arr = e.target.value.split(',').map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n));
+            update('available', arr);
+          }}
+          disabled={disabled}
+        />
       </div>
       <p style={{ fontSize: '0.75rem', color: 'var(--clr-text-muted)' }}>Max/Allocation matrices are pre-configured from the template. Advanced editing available in future update.</p>
     </div>
