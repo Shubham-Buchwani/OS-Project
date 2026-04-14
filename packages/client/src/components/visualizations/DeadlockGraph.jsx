@@ -26,20 +26,22 @@ export default function DeadlockGraph({ step, need, allocation, available, adjac
 
     function renderBankersChart() {
       const svg = d3.select(svgRef.current);
-      const width = 600, height = 400;
-      const margin = { top: 60, right: 30, bottom: 20, left: 60 };
+      const processHeight = 45;
+      const margin = { top: 70, right: 30, bottom: 30, left: 60 };
+      const width = 600;
+      const height = margin.top + margin.bottom + (processCount * processHeight);
 
       // Initialize Banker's Chart structure
       if (svg.select('.bankers-group').empty()) {
         svg.selectAll('*').remove();
         svg.attr('width', '100%').attr('height', height).attr('viewBox', `0 0 ${width} ${height}`);
         svg.append('g').attr('class', 'bankers-group').attr('transform', `translate(${margin.left},${margin.top})`);
+      } else {
+        // Update height/viewBox if processCount changed
+        svg.attr('height', height).attr('viewBox', `0 0 ${width} ${height}`);
       }
 
       const g = svg.select('.bankers-group');
-      const processPadding = 12;
-      const barHeight = 24;
-      const processHeight = 40;
       const resourceCount = available?.length || 0;
       const resourceWidth = (width - margin.left - margin.right) / Math.max(1, resourceCount);
 
@@ -129,8 +131,9 @@ export default function DeadlockGraph({ step, need, allocation, available, adjac
         const svg = d3.select(svgRef.current);
         svg.selectAll('*').remove();
 
-        const width = 500, height = 300;
-        svg.attr('width', width).attr('height', height).attr('viewBox', `0 0 ${width} ${height}`);
+        const width = 500;
+        const height = Math.max(300, 200 + (processCount * 20));
+        svg.attr('width', '100%').attr('height', height).attr('viewBox', `0 0 ${width} ${height}`);
 
         const nodes = Array.from({ length: processCount }, (_, i) => ({ id: i, label: `P${i}` }));
         const links = [];
@@ -198,7 +201,7 @@ export default function DeadlockGraph({ step, need, allocation, available, adjac
         <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-muted)', marginBottom: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           {isBankers ? "Resource Allocation Status" : "Wait-For Graph Detection"}
         </div>
-        <svg ref={svgRef} style={{ width: '100%', height: isBankers ? 400 : 300, display: 'block' }} />
+        <svg ref={svgRef} style={{ width: '100%', height: 'auto', display: 'block' }} />
       </div>
 
       {isBankers && step?.safeSequence?.length > 0 && (
