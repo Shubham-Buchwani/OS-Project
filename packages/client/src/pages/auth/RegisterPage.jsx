@@ -31,7 +31,7 @@ export default function RegisterPage() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 24 }}>
-      <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(ellipse at center, rgba(6,182,212,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
+      {/* Flat background */}
 
       <motion.div
         initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
@@ -42,11 +42,11 @@ export default function RegisterPage() {
           <div style={{ width: 36, height: 36, background: 'var(--clr-primary-dim)', border: '1px solid var(--clr-border-hover)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--clr-primary)' }}>
             <Cpu size={20} />
           </div>
-          <span style={{ fontWeight: 700, background: 'linear-gradient(135deg, var(--clr-primary), var(--clr-accent))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>OS Simulator</span>
+          <span style={{ fontWeight: 700, color: 'var(--clr-primary)' }}>OS Simulator</span>
         </div>
 
-        <h2 style={{ marginBottom: 4 }}>Create account</h2>
-        <p style={{ marginBottom: 28 }}>Start mastering OS concepts today — it's free.</p>
+        <h2 style={{ marginBottom: 4 }}>Create an account</h2>
+        <p style={{ marginBottom: 28 }}>It only takes a minute to get started.</p>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div className="form-group">
@@ -71,7 +71,7 @@ export default function RegisterPage() {
           {error && !validationErrors.length && <p className="form-error">{error.response?.data?.error?.message ?? 'Registration failed'}</p>}
 
           <button type="submit" className="btn btn-primary" style={{ marginTop: 8 }} disabled={isPending}>
-            {isPending ? <><Loader size={16} className="spin" /> Creating account…</> : 'Create Account'}
+            {isPending ? <><Loader size={16} className="spin" /> Creating account…</> : 'Create account'}
           </button>
         </form>
 
