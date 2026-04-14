@@ -2,7 +2,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, FlaskConical, History, TrendingUp,
-  ChevronLeft, ChevronRight, LogOut, Cpu, Menu
+  ChevronLeft, ChevronRight, LogOut, Cpu, Menu, X
 } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore.js';
 import { useUIStore } from '../stores/uiStore.js';
@@ -31,46 +31,48 @@ export default function AppLayout() {
 
   return (
     <div className={styles.layout}>
+      {/* ── Mobile Header ───────────────────────────────────── */}
+      <header className={styles.mobileHeader}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <Cpu size={20} color="var(--clr-primary)" />
+          <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>OS Sim</span>
+        </div>
+        <button className={styles.hamburgerBtn} onClick={toggleSidebar}>
+          {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </header>
+
+      {/* ── Sidebar Backdrop (Mobile Only) ──────────────────── */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.sidebarOverlay}
+            onClick={toggleSidebar}
+          />
+        )}
+      </AnimatePresence>
+
       {/* ── Sidebar ──────────────────────────────────────────── */}
-      <motion.aside
-        className={styles.sidebar}
-        animate={{ width: sidebarOpen ? 240 : 72 }}
-        transition={{ duration: 0.25, ease: 'easeInOut' }}
-      >
-        {/* Logo */}
+      <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.logo}>
           <div className={styles.logoIcon}><Cpu size={22} /></div>
-          <AnimatePresence>
-            {sidebarOpen && (
-              <motion.span
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -8 }}
-                transition={{ duration: 0.15 }}
-                className={styles.logoText}
-              >
-                OS Simulator
-              </motion.span>
-            )}
-          </AnimatePresence>
+          <span className={styles.logoText}>OS Simulator</span>
         </div>
 
         {/* Nav */}
         <nav className={styles.nav}>
           {NAV_ITEMS.map(({ path, icon: Icon, label }) => (
-            <NavLink key={path} to={path} className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}>
+            <NavLink 
+              key={path} 
+              to={path} 
+              className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
+              onClick={() => { if (window.innerWidth < 768) toggleSidebar(); }}
+            >
               <Icon size={20} className={styles.navIcon} />
-              <AnimatePresence>
-                {sidebarOpen && (
-                  <motion.span
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    transition={{ duration: 0.15 }}
-                    className={styles.navLabel}
-                  >
-                    {label}
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              <span className={styles.navLabel}>{label}</span>
             </NavLink>
           ))}
         </nav>
@@ -79,28 +81,24 @@ export default function AppLayout() {
         <div className={styles.sidebarFooter}>
           <div className={styles.userRow}>
             <div className={styles.avatar}>{user?.displayName?.[0]?.toUpperCase() ?? 'U'}</div>
-            <AnimatePresence>
-              {sidebarOpen && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
-                  <div className={styles.userName}>{user?.displayName}</div>
-                  <div className={styles.userRole}>{user?.role}</div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <div className={styles.userInfo}>
+              <div className={styles.userName}>{user?.displayName}</div>
+              <div className={styles.userRole}>{user?.role}</div>
+            </div>
           </div>
           <button className={styles.logoutBtn} onClick={handleLogout} title="Logout">
             <LogOut size={18} />
           </button>
         </div>
 
-        {/* Toggle */}
+        {/* Desktop Toggle */}
         <button className={styles.toggleBtn} onClick={toggleSidebar}>
           {sidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
         </button>
-      </motion.aside>
+      </aside>
 
       {/* ── Main ─────────────────────────────────────────────── */}
-      <main className={styles.main}>
+      <main className={`${styles.main} ${sidebarOpen ? styles.mainPushed : ''}`}>
         <Outlet />
       </main>
     </div>
