@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, FlaskConical, Cpu, Database, AlertTriangle, HardDrive } from 'lucide-react';
 import { simulationsApi } from '../lib/api.js';
+import Skeleton from '../components/ui/Skeleton.jsx';
 
 const MODULE_OPTIONS = [
   { value: '',           label: 'All Modules' },
@@ -23,7 +24,7 @@ export default function SimulationsPage() {
     queryKey: ['simulations', filters, page],
     queryFn: () => simulationsApi.list({ ...filters, page, limit: 12 }),
     select: (r) => r.data,
-    keepPreviousData: true,
+    placeholderData: (prev) => prev,
   });
 
   const sims = data?.data ?? [];
@@ -60,9 +61,9 @@ export default function SimulationsPage() {
       </div>
 
       {/* Grid */}
-      {isLoading ? (
+      {isLoading && !data ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
-          {Array.from({ length: 6 }).map((_, i) => <div key={i} className="skeleton" style={{ height: 200 }} />)}
+          {Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} height="200px" />)}
         </div>
       ) : (
         <AnimatePresence mode="wait">
