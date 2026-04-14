@@ -72,7 +72,7 @@ export default function SimulationRunPage() {
     switch (module) {
       case 'scheduling': return <GanttChart ganttChart={runDoc?.result?.ganttChart ?? []} currentStep={currentStep} processes={config?.processes ?? []} />;
       case 'memory':     return <MemoryGrid step={currentStep} frameCount={config?.frameCount ?? 4} />;
-      case 'deadlock':   return <DeadlockGraph step={currentStep} need={runDoc?.result?.need} adjacencyList={runDoc?.result?.adjacencyList} processCount={config?.processCount ?? 0} />;
+      case 'deadlock':   return <DeadlockGraph step={currentStep} need={runDoc?.result?.need} allocation={config?.allocation} available={config?.available} adjacencyList={runDoc?.result?.adjacencyList} processCount={config?.processCount ?? 0} />;
       case 'filesystem': return <DiskChart step={currentStep} mode={config?.mode} diskScheduling={config?.diskScheduling} diskBlocks={config?.diskBlocks} />;
       default: return <p>Unknown module</p>;
     }
