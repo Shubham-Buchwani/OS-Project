@@ -26,12 +26,14 @@ export default function DeadlockGraph({ step, need, allocation, available, adjac
 
     function renderBankersChart() {
       const svg = d3.select(svgRef.current);
-      const processHeight = 45;
+      const width = 800; // Desktop-first width
       const margin = { top: 70, right: 30, bottom: 30, left: 60 };
-      const width = 600;
+      
+      // Calculate process height to fit within a reasonable 450px window if possible
+      const targetHeight = 450;
+      const processHeight = Math.min(45, Math.max(22, (targetHeight - margin.top - margin.bottom) / Math.max(1, processCount)));
       const height = margin.top + margin.bottom + (processCount * processHeight);
-
-      // Initialize Banker's Chart structure
+ // Initialize Banker's Chart structure
       if (svg.select('.bankers-group').empty()) {
         svg.selectAll('*').remove();
         svg.attr('width', '100%').attr('height', height).attr('viewBox', `0 0 ${width} ${height}`);
@@ -54,7 +56,8 @@ export default function DeadlockGraph({ step, need, allocation, available, adjac
         .attr('class', 'pool-label').attr('y', -10).attr('font-size', '10px').attr('fill', 'var(--clr-text-muted)').attr('font-weight', 600).text(d => d);
 
       const poolItems = poolGroup.selectAll('.pool-item').data(workData).join('g')
-        .attr('class', 'pool-item').attr('transform', (_, i) => `translate(${i * 60}, 0)`);
+        .attr('class', 'pool-item')
+        .attr('transform', (_, i) => `translate(${(i % 8) * 60}, ${Math.floor(i / 8) * 35})`);
 
       poolItems.selectAll('rect').data(d => [d]).join('rect')
         .attr('width', 45).attr('height', 20).attr('rx', 4).attr('fill', 'rgba(139,92,246,0.1)').attr('stroke', 'rgba(139,92,246,0.3)');
@@ -131,9 +134,9 @@ export default function DeadlockGraph({ step, need, allocation, available, adjac
         const svg = d3.select(svgRef.current);
         svg.selectAll('*').remove();
 
-        const width = 500;
-        const height = Math.max(300, 200 + (processCount * 20));
-        svg.attr('width', '100%').attr('height', height).attr('viewBox', `0 0 ${width} ${height}`);
+        const width = 600;
+        const height = 400; // Fixed height to fit desktop screens without scrolling
+        svg.attr('width', '100%').attr('height', '100%').attr('viewBox', `0 0 ${width} ${height}`);
 
         const nodes = Array.from({ length: processCount }, (_, i) => ({ id: i, label: `P${i}` }));
         const links = [];
@@ -142,9 +145,10 @@ export default function DeadlockGraph({ step, need, allocation, available, adjac
         });
 
         const sim = d3.forceSimulation(nodes)
-          .force('link', d3.forceLink(links).id(d => d.id).distance(80))
-          .force('charge', d3.forceManyBody().strength(-200))
-          .force('center', d3.forceCenter(width / 2, height / 2));
+          .force('link', d3.forceLink(links).id(d => d.id).distance(100))
+          .force('charge', d3.forceManyBody().strength(-300))
+          .force('center', d3.forceCenter(width / 2, height / 2))
+          .force('collision', d3.forceCollide().radius(30));
         simRef.current = sim;
 
         const g = svg.append('g').attr('class', 'main-group');
@@ -164,7 +168,12 @@ export default function DeadlockGraph({ step, need, allocation, available, adjac
 
         sim.on('tick', () => {
           link.attr('x1', d => d.source.x).attr('y1', d => d.source.y).attr('x2', d => d.target.x).attr('y2', d => d.target.y);
-          node.attr('transform', d => `translate(${d.x},${d.y})`);
+          node.attr('transform', d => {
+            // Keep within bounds
+            d.x = Math.max(25, Math.min(width - 25, d.x));
+            d.y = Math.max(25, Math.min(height - 25, d.y));
+            return `translate(${d.x},${d.y})`;
+          });
         });
       }
 

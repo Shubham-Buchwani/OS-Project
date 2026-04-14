@@ -152,7 +152,7 @@ export default function SimulationRunPage() {
           </div>
 
           {/* Visualization area */}
-          <div className="glass-card" style={{ padding: 24, flex: 1, minHeight: 320 }}>
+          <div className="glass-card" style={{ padding: 24, flex: 1, minHeight: 320, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <AnimatePresence mode="wait">
               <motion.div key={activeTab} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} style={{ height: '100%' }}>
                 {activeTab === 'visual'  && renderVisual()}

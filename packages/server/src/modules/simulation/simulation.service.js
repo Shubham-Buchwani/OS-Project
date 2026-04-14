@@ -10,13 +10,18 @@ import crypto from 'crypto';
 // ─── Simulation Templates ────────────────────────────────────────────────────
 
 export async function listSimulations(query) {
-  const { module, algorithm, difficulty, page = 1, limit = 20, tags } = query;
-
+  const { module, algorithm, difficulty, page = 1, limit = 20, tags, search } = query;
   const filter = { isPublished: true };
   if (module) filter.module = module;
   if (algorithm) filter.algorithm = algorithm;
   if (difficulty) filter.difficulty = difficulty;
   if (tags) filter.tags = { $in: Array.isArray(tags) ? tags : [tags] };
+  if (search) {
+    filter.$or = [
+      { title: { $regex: search, $options: 'i' } },
+      { description: { $regex: search, $options: 'i' } }
+    ];
+  }
 
   const skip = (page - 1) * limit;
   const [sims, totalCount] = await Promise.all([
