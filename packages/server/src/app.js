@@ -57,16 +57,22 @@ app.use('/api/v1/simulations', simulationRoutes);
 app.use('/api/v1/runs', runRoutes);
 app.use('/api/v1/progress', progressRoutes);
 
-// ── Static Files (Production) ────────────────────────────────────────────────
-if (config.NODE_ENV === 'production') {
-  const publicPath = path.resolve(__dirname, '../../client/dist');
-  app.use(express.static(publicPath));
+// ── Frontend Serving (Universal) ─────────────────────────────────────────────
+const publicPath = path.resolve(__dirname, '../../client/dist');
 
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) return next();
-    res.sendFile(path.join(publicPath, 'index.html'));
+// Serve static files if they exist
+app.use(express.static(publicPath));
+
+// SPA Catch-all: Send index.html for any non-API route
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  res.sendFile(path.join(publicPath, 'index.html'), (err) => {
+    if (err) {
+      // If index.html is missing, we fall through to the 404 handler
+      next();
+    }
   });
-}
+});
 
 // ── 404 Catch-All ────────────────────────────────────────────────────────────
 app.use((_req, res) => {

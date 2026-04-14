@@ -8,6 +8,9 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+  "devDependencies": {
+    "@types/d3": "^7.4.3"
+  },
   "dependencies": {
     "@os-sim/shared": "*",
     "@tanstack/react-query": "^5.28.0",
@@ -21,10 +24,7 @@
     "react-dom": "^18.3.1",
     "react-konva": "^18.2.10",
     "react-router-dom": "^6.22.3",
-    "zustand": "^4.5.2"
-  },
-  "devDependencies": {
-    "@types/d3": "^7.4.3",
+    "zustand": "^4.5.2",
     "@vitejs/plugin-react": "^4.2.1",
     "vite": "^5.2.0"
   }
