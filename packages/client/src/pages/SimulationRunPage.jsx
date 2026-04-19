@@ -12,6 +12,7 @@ import DeadlockGraph from '../components/visualizations/DeadlockGraph.jsx';
 import DiskChart from '../components/visualizations/DiskChart.jsx';
 import ConfigEditor from '../components/simulation/ConfigEditor.jsx';
 import MetricsPanel from '../components/simulation/MetricsPanel.jsx';
+import EducationalNarrator from '../components/simulation/EducationalNarrator.jsx';
 
 const SPEED_OPTIONS = [0.25, 0.5, 1, 2, 5, 10];
 
@@ -152,10 +153,26 @@ export default function SimulationRunPage() {
           </div>
 
           {/* Visualization area */}
-          <div className="glass-card" style={{ padding: 24, flex: 1, minHeight: 320, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div className="glass-card" style={{ padding: 24, flex: 1, minHeight: 400, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <AnimatePresence mode="wait">
-              <motion.div key={activeTab} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} style={{ height: '100%' }}>
-                {activeTab === 'visual'  && renderVisual()}
+              <motion.div key={activeTab} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} style={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 24 }}>
+                {activeTab === 'visual'  && (
+                  <>
+                    <div style={{ flex: 1, minHeight: 0 }}>
+                      {renderVisual()}
+                    </div>
+                    {steps.length > 0 && currentStep && (
+                      <div style={{ marginTop: 'auto', borderTop: '1px solid var(--clr-border)', paddingTop: 24 }}>
+                        <EducationalNarrator 
+                          step={currentStep} 
+                          module={simData?.module} 
+                          algorithm={simData?.algorithm} 
+                          config={config} 
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
                 {activeTab === 'metrics' && <MetricsPanel metrics={metrics} module={simData?.module} completedProcesses={runDoc?.result?.completedProcesses} />}
                 {activeTab === 'notes'   && (
                   <div style={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
